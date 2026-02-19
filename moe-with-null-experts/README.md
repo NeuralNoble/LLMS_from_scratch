@@ -1,12 +1,9 @@
----
-title: Shakespeare_MoE
-app_file: app.py
-sdk: gradio
-sdk_version: 6.5.1
----
+
 # MOE  with Null Experts (achieving weight sparsity + data sparsity)
 
-This repo is a small implementation of the paper **[IMPROVING MOE COMPUTE EFFICIENCY BY COMPOSING WEIGHT AND DATA SPARSITY](https://arxiv.org/abs/2601.15370)** which mplements the core mechanism of **"Null Experts"** to achieve data sparsity in Mixture-of-Experts (MoE) transformers.(tested on shakespeare dataset)
+This repo is a small implementation (Model parameters: 21,259,392) of the paper **[IMPROVING MOE COMPUTE EFFICIENCY BY COMPOSING WEIGHT AND DATA SPARSITY](https://arxiv.org/abs/2601.15370)** which mplements the core mechanism of **"Null Experts"** to achieve data sparsity in Mixture-of-Experts (MoE) transformers.(tested on shakespeare dataset)
+
+
 
 
 ## 🧠 Core Concept: Variable Compute
@@ -19,6 +16,37 @@ Standard MoE achieves **Weight Sparsity** by activating a fixed number ($k$) of 
     - *Example:* At $\rho=0.5$ (50% Data Sparsity) with Top-2 routing, the model activates **1 Real Expert on average** per token, rather than always activating 2.
 
 ---
+
+## config 
+
+# Model
+```
+    vocab_size: int = 50257 # using gpt tokenizer thats whyy
+    d_model: int = 384
+    n_heads: int = 6
+    head_dim: int = 64
+    n_layers: int = 6
+    seq_len: int = 128
+
+    # MoE
+    n_real_experts: int = 8
+    shared_expert_hidden: int = 768
+    expert_hidden: int = 384
+    top_k: int = 4
+    rho: float = 0.5  # target data-sparsity
+
+    # Loss weights
+    balance_loss_weight: float = 2e-2
+    z_loss_weight: float = 1e-3
+
+    # Training
+    batch_size: int = 32
+    max_steps: int = 3000
+    lr: float = 3e-4
+    weight_decay: float = 0.1
+    warmup_steps: int = 100
+    grad_clip: float = 1.0
+```
 
 ## 🏗️ Technical Implementation
 
